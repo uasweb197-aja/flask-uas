@@ -1,5 +1,7 @@
-﻿Flask
+Flask==3.0.0
 reportlab
 qrcode
 pillow
 gunicorn
+psycopg2-binary
+python-dotenv

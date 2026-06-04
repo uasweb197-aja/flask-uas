@@ -1,63 +1,81 @@
-﻿import os
-import sqlite3
+import os
 import uuid
 import base64
 import time
 from io import BytesIO
 from flask import Flask, render_template, request, redirect, url_for, flash, send_file
 import qrcode
+import psycopg2
+from psycopg2.extras import RealDictCursor
 from export_pdf import calculate_books_hash, generate_pdf_buffer
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'flask-book-manager-secret-key-12345')
 
-if os.environ.get('VERCEL'):
-    DATABASE = '/tmp/books.db'
-else:
-    DATABASE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'books.db')
+# Database configuration
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 def get_db():
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
+    """Get database connection"""
+    if not DATABASE_URL:
+        raise ValueError("DATABASE_URL environment variable not set")
+    conn = psycopg2.connect(DATABASE_URL)
     return conn
 
 def init_db():
-    db_dir = os.path.dirname(DATABASE)
-    if db_dir and not os.path.exists(db_dir):
-        os.makedirs(db_dir, exist_ok=True)
-    
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS books (
-            id TEXT PRIMARY KEY,
-            judul TEXT NOT NULL,
-            penulis TEXT NOT NULL,
-            penerbit TEXT NOT NULL
-        )
-    ''')
-    conn.commit()
-    
-    cursor.execute('SELECT COUNT(*) FROM books')
-    if cursor.fetchone()[0] == 0:
-        sample_books = [
-            (str(uuid.uuid4()), 'Laskar Pelangi', 'Andrea Hirata', 'Bentang Pustaka'),
-            (str(uuid.uuid4()), 'Bumi Manusia', 'Pramoedya Ananta Toer', 'Lentera Dipantara'),
-            (str(uuid.uuid4()), 'Filosofi Kopi', 'Dee Lestari', 'Truewriting')
-        ]
-        cursor.executemany('INSERT INTO books (id, judul, penulis, penerbit) VALUES (?, ?, ?, ?)', sample_books)
+    """Initialize database tables"""
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS books (
+                id TEXT PRIMARY KEY,
+                judul TEXT NOT NULL,
+                penulis TEXT NOT NULL,
+                penerbit TEXT NOT NULL
+            )
+        ''')
         conn.commit()
-    
-    conn.close()
+        
+        # Check if table is empty
+        cursor.execute('SELECT COUNT(*) FROM books')
+        if cursor.fetchone()[0] == 0:
+            sample_books = [
+                (str(uuid.uuid4()), 'Laskar Pelangi', 'Andrea Hirata', 'Bentang Pustaka'),
+                (str(uuid.uuid4()), 'Bumi Manusia', 'Pramoedya Ananta Toer', 'Lentera Dipantara'),
+                (str(uuid.uuid4()), 'Filosofi Kopi', 'Dee Lestari', 'Truewriting')
+            ]
+            cursor.executemany('INSERT INTO books (id, judul, penulis, penerbit) VALUES (%s, %s, %s, %s)', sample_books)
+            conn.commit()
+        
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print(f"Database initialization error: {e}")
 
-init_db()
+# Initialize database on startup
+try:
+    init_db()
+except Exception as e:
+    print(f"Warning: Could not initialize database on startup: {e}")
 
 @app.route('/')
 def index():
-    conn = get_db()
-    books = conn.execute('SELECT * FROM books').fetchall()
-    conn.close()
-    return render_template('index.html', books=books)
+    try:
+        conn = get_db()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute('SELECT * FROM books')
+        books = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return render_template('index.html', books=books)
+    except Exception as e:
+        flash(f'Error loading books: {str(e)}', 'danger')
+        return render_template('index.html', books=[])
 
 @app.route('/add', methods=['GET', 'POST'])
 def add_book():
@@ -74,8 +92,11 @@ def add_book():
         
         try:
             conn = get_db()
-            conn.execute('INSERT INTO books (id, judul, penulis, penerbit) VALUES (?, ?, ?, ?)', (book_id, judul, penulis, penerbit))
+            cursor = conn.cursor()
+            cursor.execute('INSERT INTO books (id, judul, penulis, penerbit) VALUES (%s, %s, %s, %s)', 
+                         (book_id, judul, penulis, penerbit))
             conn.commit()
+            cursor.close()
             conn.close()
             flash('Buku berhasil ditambahkan!', 'success')
             return redirect(url_for('index'))
@@ -88,7 +109,10 @@ def add_book():
 @app.route('/edit/<book_id>', methods=['GET', 'POST'])
 def edit_book(book_id):
     conn = get_db()
-    book = conn.execute('SELECT * FROM books WHERE id = ?', (book_id,)).fetchone()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    cursor.execute('SELECT * FROM books WHERE id = %s', (book_id,))
+    book = cursor.fetchone()
+    cursor.close()
     conn.close()
     
     if not book:
@@ -106,8 +130,11 @@ def edit_book(book_id):
         
         try:
             conn = get_db()
-            conn.execute('UPDATE books SET judul = ?, penulis = ?, penerbit = ? WHERE id = ?', (judul, penulis, penerbit, book_id))
+            cursor = conn.cursor()
+            cursor.execute('UPDATE books SET judul = %s, penulis = %s, penerbit = %s WHERE id = %s', 
+                         (judul, penulis, penerbit, book_id))
             conn.commit()
+            cursor.close()
             conn.close()
             flash('Buku berhasil diperbarui!', 'success')
             return redirect(url_for('index'))
@@ -121,8 +148,10 @@ def edit_book(book_id):
 def delete_book(book_id):
     try:
         conn = get_db()
-        conn.execute('DELETE FROM books WHERE id = ?', (book_id,))
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM books WHERE id = %s', (book_id,))
         conn.commit()
+        cursor.close()
         conn.close()
         flash('Buku berhasil dihapus!', 'success')
     except Exception as e:
@@ -134,7 +163,10 @@ def delete_book(book_id):
 def preview_export():
     try:
         conn = get_db()
-        books = conn.execute('SELECT * FROM books').fetchall()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute('SELECT * FROM books')
+        books = cursor.fetchall()
+        cursor.close()
         conn.close()
         
         if not books:
@@ -164,7 +196,10 @@ def preview_export():
 def download_pdf():
     try:
         conn = get_db()
-        books = conn.execute('SELECT * FROM books').fetchall()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute('SELECT * FROM books')
+        books = cursor.fetchall()
+        cursor.close()
         conn.close()
         
         books_list = [dict(b) for b in books]
