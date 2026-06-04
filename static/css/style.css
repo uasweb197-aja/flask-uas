@@ -341,3 +341,33 @@ body {
         gap: 4px;
     }
 }
+/* Fix PDF Table - Strong styling */
+.preview-card .pdf-page {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.preview-card table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.preview-card table th {
+    background-color: #4f46e5 !important;
+    color: white !important;
+    padding: 10px !important;
+    text-align: left !important;
+    border: 1px solid #4f46e5 !important;
+    font-weight: bold !important;
+}
+
+.preview-card table td {
+    padding: 8px !important;
+    border: 1px solid #cbd5e1 !important;
+    vertical-align: top !important;
+}

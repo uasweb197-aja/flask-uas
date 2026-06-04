@@ -18,58 +18,59 @@
     </div>
     
     <div class="card-body document-preview-container">
-        <div class="pdf-page">
-            <div class="pdf-page-header">
-                <span class="pdf-brand"><i class="fa-solid fa-book-open-reader"></i> LibSigManager</span>
-                <span class="pdf-doc-type">DOKUMEN INTEGRITAS DATA</span>
+        <div class="pdf-page" style="max-width: 800px; margin: 0 auto; background: white; border-radius: 16px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+            <div class="pdf-page-header" style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <span class="pdf-brand" style="font-weight: 700; color: #4f46e5;"><i class="fa-solid fa-book-open-reader"></i> LibSigManager</span>
+                <span class="pdf-doc-type" style="font-size: 12px; color: #94a3b8;">DOKUMEN INTEGRITAS DATA</span>
             </div>
-            <div class="pdf-divider"></div>
+            <div class="pdf-divider" style="height: 2px; background: linear-gradient(90deg, #4f46e5, #cbd5e1); margin: 20px 0;"></div>
             
             <div class="pdf-page-body">
-                <h1 class="pdf-title">Data Buku</h1>
+                <h1 class="pdf-title" style="font-size: 24px; color: #1e293b; margin-bottom: 24px;">Data Buku</h1>
                 
-                <table class="pdf-table">
+                <!-- TABLE DENGAN INLINE STYLE -->
+                <table width="100%" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; margin-bottom: 30px;">
                     <thead>
-                        <tr>
-                            <th>Judul</th>
-                            <th>Penulis</th>
-                            <th>Penerbit</th>
+                        <tr style="background-color: #4f46e5; color: white;">
+                            <th style="padding: 10px; text-align: left; border: 1px solid #4f46e5; font-weight: bold;">Judul</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #4f46e5; font-weight: bold;">Penulis</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #4f46e5; font-weight: bold;">Penerbit</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for book in books %}
-                            <tr>
-                                <td class="font-bold">{{ book.judul }}</td>
-                                <td>{{ book.penulis }}</td>
-                                <td>{{ book.penerbit }}</td>
-                            </tr>
+                        <tr style="background-color: {% if loop.index is even %}#f8fafc{% else %}white{% endif %};">
+                            <td style="padding: 8px; border: 1px solid #cbd5e1; vertical-align: top;">{{ book.judul }}</td>
+                            <td style="padding: 8px; border: 1px solid #cbd5e1; vertical-align: top;">{{ book.penulis }}</td>
+                            <td style="padding: 8px; border: 1px solid #cbd5e1; vertical-align: top;">{{ book.penerbit }}</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
                 
-                <div class="pdf-signature-section">
-                    <h3 class="pdf-section-title">Tanda Tangan Digital</h3>
-                    <p class="pdf-hash-label">Message Digest (SHA-256):</p>
-                    <div class="pdf-hash-wrapper">
-                        <code class="pdf-hash" id="digestHash">{{ sha256_hash }}</code>
-                        <button class="btn-copy" onclick="copyHash()" title="Salin Hash">
-                            <i class="fa-regular fa-copy"></i>
+                <div class="pdf-signature-section" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                    <h3 class="pdf-section-title" style="font-size: 16px; color: #1e293b; margin-bottom: 12px;">Tanda Tangan Digital</h3>
+                    <p class="pdf-hash-label" style="font-weight: 600; font-size: 12px; color: #64748b; margin-bottom: 8px;">Message Digest (SHA-256):</p>
+                    <div class="pdf-hash-wrapper" style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <code class="pdf-hash" id="digestHash" style="font-family: monospace; font-size: 11px; background: #f1f5f9; padding: 8px 12px; border-radius: 8px; word-break: break-all; flex: 1;">{{ sha256_hash }}</code>
+                        <button class="btn-copy" onclick="copyHash()" title="Salin Hash" style="background: #e0e7ff; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; color: #4f46e5;">
+                            <i class="fa-regular fa-copy"></i> Salin
                         </button>
                     </div>
                     
-                    <div class="pdf-qr-wrapper">
-                        <img src="data:image/png;base64,{{ qr_base64 }}" alt="QR Code Verifikasi" class="pdf-qr-image">
+                    <div class="pdf-qr-wrapper" style="display: flex; gap: 20px; align-items: center; margin-top: 20px; padding: 16px; background: #f8fafc; border-radius: 12px; flex-wrap: wrap;">
+                        <img src="data:image/png;base64,{{ qr_base64 }}" alt="QR Code Verifikasi" class="pdf-qr-image" style="width: 100px; height: 100px;">
                         <div class="pdf-qr-desc">
-                            <p class="font-bold">QR Code Keaslian Dokumen</p>
-                            <p>Kode respons cepat (QR Code) di samping berisi nilai message digest SHA-256 yang merepresentasikan seluruh status data buku di atas secara unik.</p>
+                            <p class="font-bold" style="font-weight: bold;">QR Code Keaslian Dokumen</p>
+                            <p style="font-size: 12px; color: #64748b;">Kode respons cepat (QR Code) di samping berisi nilai message digest SHA-256 yang merepresentasikan seluruh status data buku di atas secara unik.</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div class="pdf-page-footer">
-                <div class="pdf-divider"></div>
-                <p>Dokumen ini dibuat otomatis oleh sistem pada: {{ timestamp }}</p>
+            <div class="pdf-page-footer" style="margin-top: 40px; text-align: center;">
+                <div class="pdf-divider" style="height: 1px; background: #e2e8f0; margin: 20px 0;"></div>
+                <p style="font-size: 10px; color: #94a3b8;">Dokumen ini dibuat otomatis oleh sistem pada: {{ timestamp }}</p>
             </div>
         </div>
     </div>
