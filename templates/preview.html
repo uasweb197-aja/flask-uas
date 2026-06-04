@@ -1,0 +1,86 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+<div class="card preview-card">
+    <div class="card-header">
+        <div class="header-left">
+            <h2>Pratinjau Dokumen PDF</h2>
+            <p class="header-desc">Halaman ini mensimulasikan rancangan dokumen resmi sebelum diekspor ke PDF.</p>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('index') }}" class="btn btn-outline">
+                <i class="fa-solid fa-arrow-left"></i> Kembali
+            </a>
+            <a href="{{ url_for('download_pdf') }}" class="btn btn-secondary">
+                <i class="fa-solid fa-download"></i> Unduh PDF Resmi
+            </a>
+        </div>
+    </div>
+    
+    <div class="card-body document-preview-container">
+        <div class="pdf-page">
+            <div class="pdf-page-header">
+                <span class="pdf-brand"><i class="fa-solid fa-book-open-reader"></i> LibSigManager</span>
+                <span class="pdf-doc-type">DOKUMEN INTEGRITAS DATA</span>
+            </div>
+            <div class="pdf-divider"></div>
+            
+            <div class="pdf-page-body">
+                <h1 class="pdf-title">Data Buku</h1>
+                
+                <table class="pdf-table">
+                    <thead>
+                        <tr>
+                            <th>Judul</th>
+                            <th>Penulis</th>
+                            <th>Penerbit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for book in books %}
+                            <tr>
+                                <td class="font-bold">{{ book.judul }}</td>
+                                <td>{{ book.penulis }}</td>
+                                <td>{{ book.penerbit }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <div class="pdf-signature-section">
+                    <h3 class="pdf-section-title">Tanda Tangan Digital</h3>
+                    <p class="pdf-hash-label">Message Digest (SHA-256):</p>
+                    <div class="pdf-hash-wrapper">
+                        <code class="pdf-hash" id="digestHash">{{ sha256_hash }}</code>
+                        <button class="btn-copy" onclick="copyHash()" title="Salin Hash">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="pdf-qr-wrapper">
+                        <img src="data:image/png;base64,{{ qr_base64 }}" alt="QR Code Verifikasi" class="pdf-qr-image">
+                        <div class="pdf-qr-desc">
+                            <p class="font-bold">QR Code Keaslian Dokumen</p>
+                            <p>Kode respons cepat (QR Code) di samping berisi nilai message digest SHA-256 yang merepresentasikan seluruh status data buku di atas secara unik.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pdf-page-footer">
+                <div class="pdf-divider"></div>
+                <p>Dokumen ini dibuat otomatis oleh sistem pada: {{ timestamp }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyHash() {
+    var hashText = document.getElementById("digestHash").innerText;
+    navigator.clipboard.writeText(hashText).then(function() {
+        alert("Hash SHA-256 berhasil disalin ke clipboard!");
+    });
+}
+</script>
+{% endblock %}

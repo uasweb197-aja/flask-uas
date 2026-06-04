@@ -1,0 +1,71 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+<div class="card index-card">
+    <div class="card-header">
+        <div class="header-left">
+            <h2>Koleksi Buku Terdaftar</h2>
+            <span class="badge">{{ books|length }} Buku</span>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('add_book') }}" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Tambah Buku
+            </a>
+            {% if books %}
+                <a href="{{ url_for('preview_export') }}" class="btn btn-secondary">
+                    <i class="fa-solid fa-file-pdf"></i> Export PDF (Signed)
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="table-container">
+        {% if books %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th width="8%">No</th>
+                        <th width="35%">Judul Buku</th>
+                        <th width="27%">Penulis</th>
+                        <th width="20%">Penerbit</th>
+                        <th width="10%" class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                        <tr class="table-row">
+                            <td class="text-muted">{{ loop.index }}</td>
+                            <td class="font-bold text-dark">{{ book.judul }}</td>
+                            <td>{{ book.penulis }}</td>
+                            <td>{{ book.penerbit }}</td>
+                            <td class="text-center">
+                                <div class="action-buttons">
+                                    <a href="{{ url_for('edit_book', book_id=book.id) }}" class="btn-action btn-edit" title="Ubah Data">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    <form action="{{ url_for('delete_book', book_id=book.id) }}" method="POST" class="delete-form" style="display:inline;">
+                                        <button type="button" class="btn-action btn-delete" title="Hapus Data" onclick="confirmDelete(this, '{{ book.judul|escape }}')">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon-container">
+                    <i class="fa-solid fa-box-open empty-icon"></i>
+                </div>
+                <h3>Database Kosong</h3>
+                <p>Belum ada data buku yang disimpan. Klik tombol di bawah untuk menambahkan data buku pertama Anda.</p>
+                <a href="{{ url_for('add_book') }}" class="btn btn-primary btn-large">
+                    <i class="fa-solid fa-plus"></i> Tambah Buku Pertama
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

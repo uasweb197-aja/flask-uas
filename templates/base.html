@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Data Buku | LibSigManager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo">
+                <i class="fa-solid fa-book-open-reader logo-icon"></i>
+                <h1>LibSig<span>Manager</span></h1>
+            </div>
+            <p class="subtitle">Manajemen Buku dengan Proteksi Tanda Tangan Digital SHA-256</p>
+        </header>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}" id="alert-{{ loop.index }}">
+                            <div class="alert-content">
+                                {% if category == 'success' %}
+                                    <i class="fa-solid fa-circle-check alert-icon"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-circle-exclamation alert-icon"></i>
+                                {% endif %}
+                                <span class="alert-text">{{ message }}</span>
+                            </div>
+                            <button class="close-alert" onclick="dismissAlert('alert-{{ loop.index }}')">&times;</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+        
+        <footer class="app-footer">
+            <p>&copy; 2026 LibSigManager. Sistem Keamanan & Integritas Data Buku.</p>
+        </footer>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
