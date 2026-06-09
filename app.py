@@ -2,6 +2,7 @@ import os
 import uuid
 import base64
 import time
+import logging
 from io import BytesIO
 from flask import Flask, render_template, request, redirect, url_for, flash, send_file
 import qrcode
@@ -12,25 +13,52 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Configure logging so all DB events are visible in Railway's log stream
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S',
+)
+logger = logging.getLogger(__name__)
+
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'flask-book-manager-secret-key-12345')
 
-# Database configuration
+# DATABASE_URL is read at module load for convenience; get_db() always
+# re-reads from the environment so a late-bound value is still picked up.
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
+
 def get_db():
-    """Get database connection"""
-    if not DATABASE_URL:
-        raise ValueError("DATABASE_URL environment variable not set")
-    conn = psycopg2.connect(DATABASE_URL)
-    return conn
+    """Return a new psycopg2 connection.
+
+    Reads DATABASE_URL from the environment each time so that a value
+    injected after the module was first imported is still picked up.
+    """
+    url = os.environ.get('DATABASE_URL') or DATABASE_URL
+    if not url:
+        raise ValueError(
+            "DATABASE_URL environment variable is not set. "
+            "Add a PostgreSQL service and link it to this app."
+        )
+    return psycopg2.connect(url)
+
 
 def init_db():
-    """Initialize database tables"""
+    """Create the books table and seed it with sample data if empty."""
+    url = os.environ.get('DATABASE_URL') or DATABASE_URL
+    if not url:
+        logger.warning(
+            "DATABASE_URL is not set — skipping database initialisation. "
+            "The app will retry on the first incoming request."
+        )
+        return
+
+    logger.info("Connecting to PostgreSQL to initialise schema ...")
+    conn = get_db()
     try:
-        conn = get_db()
         cursor = conn.cursor()
-        
+
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS books (
                 id TEXT PRIMARY KEY,
@@ -40,28 +68,48 @@ def init_db():
             )
         ''')
         conn.commit()
-        
-        # Check if table is empty
+        logger.info("books table is ready.")
+
+        # Seed sample data only when the table is empty
         cursor.execute('SELECT COUNT(*) FROM books')
-        if cursor.fetchone()[0] == 0:
+        count = cursor.fetchone()[0]
+        if count == 0:
             sample_books = [
                 (str(uuid.uuid4()), 'Laskar Pelangi', 'Andrea Hirata', 'Bentang Pustaka'),
                 (str(uuid.uuid4()), 'Bumi Manusia', 'Pramoedya Ananta Toer', 'Lentera Dipantara'),
-                (str(uuid.uuid4()), 'Filosofi Kopi', 'Dee Lestari', 'Truewriting')
+                (str(uuid.uuid4()), 'Filosofi Kopi', 'Dee Lestari', 'Truewriting'),
             ]
-            cursor.executemany('INSERT INTO books (id, judul, penulis, penerbit) VALUES (%s, %s, %s, %s)', sample_books)
+            cursor.executemany(
+                'INSERT INTO books (id, judul, penulis, penerbit) VALUES (%s, %s, %s, %s)',
+                sample_books,
+            )
             conn.commit()
-        
-        cursor.close()
-        conn.close()
-    except Exception as e:
-        print(f"Database initialization error: {e}")
+            logger.info("Seeded %d sample books into the books table.", len(sample_books))
+        else:
+            logger.info("books table already contains %d row(s) — skipping seed.", count)
 
-# Initialize database on startup
+        cursor.close()
+    except Exception as e:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+# ---------------------------------------------------------------------------
+# Initialise the database at startup.  Failures are logged but do NOT prevent
+# the Gunicorn worker from starting — Railway will surface the log lines and
+# the app will show a friendly flash message on the first request.
+# ---------------------------------------------------------------------------
 try:
     init_db()
-except Exception as e:
-    print(f"Warning: Could not initialize database on startup: {e}")
+except Exception as _init_err:
+    logger.error(
+        "Database initialisation failed on startup: %s — "
+        "ensure DATABASE_URL is set and the PostgreSQL service is reachable.",
+        _init_err,
+    )
+
 
 @app.route('/')
 def index():
