@@ -28,7 +28,7 @@
             <div class="pdf-page-body">
                 <h1 class="pdf-title" style="font-size: 24px; color: #1e293b; margin-bottom: 24px;">Data Buku</h1>
                 
-                <!-- TABLE DENGAN INLINE STYLE -->
+                <!-- TABEL DATA BUKU -->
                 <table width="100%" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; margin-bottom: 30px;">
                     <thead>
                         <tr style="background-color: #4f46e5; color: white;">
@@ -48,23 +48,32 @@
                     </tbody>
                 </table>
                 
-                <div class="pdf-signature-section" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
-                    <h3 class="pdf-section-title" style="font-size: 16px; color: #1e293b; margin-bottom: 12px;">Tanda Tangan Digital</h3>
-                    <p class="pdf-hash-label" style="font-weight: 600; font-size: 12px; color: #64748b; margin-bottom: 8px;">Message Digest (SHA-256):</p>
-                    <div class="pdf-hash-wrapper" style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
-                        <code class="pdf-hash" id="digestHash" style="font-family: monospace; font-size: 11px; background: #f1f5f9; padding: 8px 12px; border-radius: 8px; word-break: break-all; flex: 1;">{{ sha256_hash }}</code>
-                        <button class="btn-copy" onclick="copyHash()" title="Salin Hash" style="background: #e0e7ff; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; color: #4f46e5;">
-                            <i class="fa-regular fa-copy"></i> Salin
-                        </button>
-                    </div>
-                    
-                    <div class="pdf-qr-wrapper" style="display: flex; gap: 20px; align-items: center; margin-top: 20px; padding: 16px; background: #f8fafc; border-radius: 12px; flex-wrap: wrap;">
-                        <img src="data:image/png;base64,{{ qr_base64 }}" alt="QR Code Verifikasi" class="pdf-qr-image" style="width: 100px; height: 100px;">
-                        <div class="pdf-qr-desc">
-                            <p class="font-bold" style="font-weight: bold;">QR Code Keaslian Dokumen</p>
-                            <p style="font-size: 12px; color: #64748b;">Kode respons cepat (QR Code) di samping berisi nilai message digest SHA-256 yang merepresentasikan seluruh status data buku di atas secara unik.</p>
+                <!-- TANDA TANGAN DIGITAL DI SEBELAH KANAN -->
+                <!-- Susunan: Jabatan (atas) -> QR (tengah) -> Nama (bawah) -->
+                <div style="margin-top: 60px; display: flex; justify-content: flex-end;">
+                    <div style="text-align: center; width: 180px;">
+                        <!-- JABATAN (di atas QR) -->
+                        <p style="font-size: 10px; color: #64748b; margin: 0 0 10px 0;">CEO LibSigManager</p>
+                        
+                        <!-- QR CODE -->
+                        <div style="background: white; padding: 10px; display: inline-block; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                            <img src="data:image/png;base64,{{ qr_base64 }}" alt="QR Code Verifikasi" 
+                                 style="width: 140px; height: 140px; display: block;">
                         </div>
+                        
+                        <!-- NAMA (di bawah QR) -->
+                        <p style="font-size: 12px; font-weight: bold; color: #1e293b; margin: 10px 0 0 0;">Ahmad Zamroni</p>
                     </div>
+                </div>
+                
+                <!-- Petunjuk Verifikasi -->
+                <div style="margin-top: 30px; padding: 12px; background: #e0e7ff; border-radius: 8px;">
+                    <p style="margin: 0; font-size: 12px; color: #3730a3; text-align: center;">
+                        <i class="fa-solid fa-qrcode"></i> Scan QR Code dengan HP untuk verifikasi keaslian dokumen
+                    </p>
+                    <p style="margin-top: 8px; font-size: 10px; color: #4f46e5; word-break: break-all; text-align: center;">
+                        {{ qr_url }}
+                    </p>
                 </div>
             </div>
             
@@ -75,13 +84,4 @@
         </div>
     </div>
 </div>
-
-<script>
-function copyHash() {
-    var hashText = document.getElementById("digestHash").innerText;
-    navigator.clipboard.writeText(hashText).then(function() {
-        alert("Hash SHA-256 berhasil disalin ke clipboard!");
-    });
-}
-</script>
 {% endblock %}

@@ -6,35 +6,148 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
 }
 
-.bg-shape {
+/* ============================================ */
+/* ANIMASI BACKGROUND BERTEMA BUKU & PENGETAHUAN */
+/* ============================================ */
+
+.bg-animation {
     position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     z-index: 0;
-    opacity: 0.1;
+    overflow: hidden;
+    pointer-events: none;
 }
 
-.shape-1 {
-    top: -100px;
-    right: -100px;
-    width: 400px;
-    height: 400px;
-    background: white;
-    border-radius: 50%;
+/* Buku berterbangan */
+.floating-book {
+    position: absolute;
+    opacity: 0.3;
+    animation: floatBook 20s infinite ease-in-out;
+    font-size: 40px;
 }
 
-.shape-2 {
-    bottom: -100px;
-    left: -100px;
-    width: 500px;
-    height: 500px;
-    background: white;
-    border-radius: 50%;
+/* Variasi warna untuk setiap buku */
+.floating-book:nth-child(odd) { color: #818cf8; }
+.floating-book:nth-child(even) { color: #c084fc; }
+.floating-book:nth-child(3n) { color: #34d399; }
+.floating-book:nth-child(5n) { color: #fbbf24; }
+.floating-book:nth-child(7n) { color: #f472b6; }
+
+.floating-book:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; animation-duration: 18s; font-size: 35px; }
+.floating-book:nth-child(2) { top: 20%; left: 85%; animation-delay: 2s; animation-duration: 22s; font-size: 50px; }
+.floating-book:nth-child(3) { top: 50%; left: 15%; animation-delay: 5s; animation-duration: 25s; font-size: 30px; }
+.floating-book:nth-child(4) { top: 70%; left: 75%; animation-delay: 1s; animation-duration: 20s; font-size: 45px; }
+.floating-book:nth-child(5) { top: 85%; left: 30%; animation-delay: 7s; animation-duration: 28s; font-size: 38px; }
+.floating-book:nth-child(6) { top: 40%; left: 50%; animation-delay: 3s; animation-duration: 24s; font-size: 42px; }
+.floating-book:nth-child(7) { top: 15%; left: 45%; animation-delay: 8s; animation-duration: 19s; font-size: 28px; }
+.floating-book:nth-child(8) { top: 60%; left: 92%; animation-delay: 4s; animation-duration: 26s; font-size: 48px; }
+.floating-book:nth-child(9) { top: 30%; left: 70%; animation-delay: 6s; animation-duration: 21s; font-size: 32px; }
+.floating-book:nth-child(10) { top: 75%; left: 10%; animation-delay: 9s; animation-duration: 23s; font-size: 55px; }
+.floating-book:nth-child(11) { top: 55%; left: 60%; animation-delay: 2.5s; animation-duration: 27s; font-size: 36px; }
+.floating-book:nth-child(12) { top: 5%; left: 25%; animation-delay: 4.5s; animation-duration: 29s; font-size: 40px; }
+.floating-book:nth-child(13) { top: 90%; left: 55%; animation-delay: 10s; animation-duration: 31s; font-size: 44px; }
+.floating-book:nth-child(14) { top: 45%; left: 8%; animation-delay: 11s; animation-duration: 33s; font-size: 38px; }
+.floating-book:nth-child(15) { top: 80%; left: 88%; animation-delay: 12s; animation-duration: 35s; font-size: 50px; }
+
+@keyframes floatBook {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.3;
+    }
+    90% {
+        opacity: 0.3;
+    }
+    100% {
+        transform: translateY(-20vh) rotate(360deg);
+        opacity: 0;
+    }
 }
+
+/* Partikel pengetahuan */
+.knowledge-particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    border-radius: 50%;
+    opacity: 0;
+    animation: particleFloat 8s infinite ease-in-out;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+}
+
+.knowledge-particle:nth-child(1) { top: 20%; left: 20%; animation-delay: 0s; width: 4px; height: 4px; }
+.knowledge-particle:nth-child(2) { top: 60%; left: 35%; animation-delay: 1s; width: 6px; height: 6px; }
+.knowledge-particle:nth-child(3) { top: 40%; left: 70%; animation-delay: 2s; width: 5px; height: 5px; }
+.knowledge-particle:nth-child(4) { top: 75%; left: 50%; animation-delay: 3s; width: 8px; height: 8px; }
+.knowledge-particle:nth-child(5) { top: 10%; left: 80%; animation-delay: 4s; width: 4px; height: 4px; }
+.knowledge-particle:nth-child(6) { top: 85%; left: 15%; animation-delay: 5s; width: 7px; height: 7px; }
+.knowledge-particle:nth-child(7) { top: 30%; left: 55%; animation-delay: 6s; width: 5px; height: 5px; }
+.knowledge-particle:nth-child(8) { top: 65%; left: 90%; animation-delay: 7s; width: 9px; height: 9px; }
+.knowledge-particle:nth-child(9) { top: 50%; left: 5%; animation-delay: 1.5s; width: 5px; height: 5px; }
+.knowledge-particle:nth-child(10) { top: 95%; left: 40%; animation-delay: 2.5s; width: 7px; height: 7px; }
+.knowledge-particle:nth-child(11) { top: 15%; left: 95%; animation-delay: 3.5s; width: 4px; height: 4px; }
+.knowledge-particle:nth-child(12) { top: 45%; left: 25%; animation-delay: 4.5s; width: 8px; height: 8px; }
+.knowledge-particle:nth-child(13) { top: 5%; left: 50%; animation-delay: 5.5s; width: 5px; height: 5px; }
+.knowledge-particle:nth-child(14) { top: 70%; left: 12%; animation-delay: 6.5s; width: 6px; height: 6px; }
+.knowledge-particle:nth-child(15) { top: 25%; left: 88%; animation-delay: 7.5s; width: 5px; height: 5px; }
+
+@keyframes particleFloat {
+    0% {
+        transform: translateY(0) scale(0);
+        opacity: 0;
+    }
+    20% {
+        opacity: 0.8;
+    }
+    80% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-300px) scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* Efek gradasi dinamis di background */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.08) 50%, transparent 80%);
+    z-index: 0;
+    pointer-events: none;
+    animation: gradientShift 15s infinite alternate;
+}
+
+@keyframes gradientShift {
+    0% {
+        opacity: 0.4;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0.8;
+        transform: scale(1.3);
+    }
+}
+
+/* ============================================ */
+/* KARTU & TABEL DIBUAT TRANSPARAN */
+/* ============================================ */
 
 .app-container {
     max-width: 1400px;
@@ -44,13 +157,16 @@ body {
     z-index: 1;
 }
 
+/* Header transparan */
 .app-header {
     text-align: center;
     margin-bottom: 40px;
     padding: 30px 20px;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(15, 23, 42, 0.7);  /* transparan gelap */
     border-radius: 24px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .logo {
@@ -63,51 +179,60 @@ body {
 
 .logo-icon {
     font-size: 36px;
-    color: #4f46e5;
+    color: #a855f7;
 }
 
 .logo h1 {
     font-size: 32px;
     font-weight: 700;
-    color: #1e293b;
+    color: white;
 }
 
 .logo h1 span {
-    color: #4f46e5;
+    color: #a855f7;
 }
 
 .subtitle {
-    color: #64748b;
+    color: rgba(255, 255, 255, 0.7);
     font-size: 14px;
 }
 
+/* Kartu utama transparan */
 .card {
-    background: white;
+    background: rgba(15, 23, 42, 0.5);  /* transparan */
+    backdrop-filter: blur(12px);
     border-radius: 24px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     margin-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
 }
 
+/* Header kartu transparan */
 .card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 24px 30px;
-    background: #f8fafc;
-    border-bottom: 1px solid #e2e8f0;
+    background: rgba(30, 41, 59, 0.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     flex-wrap: wrap;
     gap: 16px;
 }
 
 .header-left h2 {
     font-size: 20px;
-    color: #1e293b;
+    color: white;
     margin-bottom: 4px;
 }
 
+.header-desc {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
 .badge {
-    background: #4f46e5;
+    background: #a855f7;
     color: white;
     padding: 4px 12px;
     border-radius: 20px;
@@ -116,11 +241,7 @@ body {
     margin-left: 12px;
 }
 
-.header-actions {
-    display: flex;
-    gap: 12px;
-}
-
+/* Tombol-tombol */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -136,12 +257,12 @@ body {
 }
 
 .btn-primary {
-    background: #4f46e5;
+    background: #a855f7;
     color: white;
 }
 
 .btn-primary:hover {
-    background: #4338ca;
+    background: #9333ea;
     transform: translateY(-2px);
 }
 
@@ -156,17 +277,18 @@ body {
 }
 
 .btn-outline {
-    background: transparent;
-    border: 1px solid #cbd5e1;
-    color: #64748b;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
 .btn-outline:hover {
-    background: #f1f5f9;
-    border-color: #4f46e5;
-    color: #4f46e5;
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #a855f7;
+    color: #a855f7;
 }
 
+/* Tabel transparan */
 .table-container {
     padding: 0 30px 30px 30px;
     overflow-x: auto;
@@ -180,21 +302,21 @@ body {
 .data-table th {
     text-align: left;
     padding: 16px 12px;
-    background: #f1f5f9;
-    color: #475569;
+    background: rgba(30, 41, 59, 0.8);
+    color: rgba(255, 255, 255, 0.9);
     font-weight: 600;
     font-size: 13px;
 }
 
 .data-table td {
     padding: 14px 12px;
-    border-bottom: 1px solid #e2e8f0;
-    color: #334155;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
     font-size: 14px;
 }
 
 .table-row:hover {
-    background: #f8fafc;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .text-center {
@@ -202,13 +324,18 @@ body {
 }
 
 .text-muted {
-    color: #94a3b8;
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .font-bold {
     font-weight: 600;
 }
 
+.text-dark {
+    color: white;
+}
+
+/* Tombol aksi */
 .action-buttons {
     display: flex;
     gap: 8px;
@@ -229,25 +356,26 @@ body {
 }
 
 .btn-edit {
-    background: #e0e7ff;
-    color: #4f46e5;
+    background: rgba(79, 70, 229, 0.8);
+    color: white;
 }
 
 .btn-edit:hover {
     background: #4f46e5;
-    color: white;
+    transform: scale(1.05);
 }
 
 .btn-delete {
-    background: #fee2e2;
-    color: #ef4444;
+    background: rgba(239, 68, 68, 0.8);
+    color: white;
 }
 
 .btn-delete:hover {
     background: #ef4444;
-    color: white;
+    transform: scale(1.05);
 }
 
+/* Form transparan */
 .card-body {
     padding: 30px;
 }
@@ -267,23 +395,29 @@ body {
     gap: 8px;
     margin-bottom: 8px;
     font-weight: 500;
-    color: #1e293b;
+    color: white;
     font-size: 14px;
 }
 
 .form-group input {
     width: 100%;
     padding: 12px 16px;
-    border: 2px solid #e2e8f0;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
     font-size: 14px;
     transition: all 0.2s;
+    color: white;
+}
+
+.form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
 }
 
 .form-group input:focus {
     outline: none;
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    border-color: #a855f7;
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
 }
 
 .form-actions {
@@ -293,6 +427,7 @@ body {
     margin-top: 32px;
 }
 
+/* Empty state transparan */
 .empty-state {
     text-align: center;
     padding: 60px 30px;
@@ -300,48 +435,82 @@ body {
 
 .empty-icon {
     font-size: 64px;
-    color: #cbd5e1;
+    color: rgba(255, 255, 255, 0.3);
 }
 
 .empty-state h3 {
     font-size: 20px;
-    color: #1e293b;
+    color: white;
     margin-bottom: 12px;
 }
 
 .empty-state p {
-    color: #64748b;
+    color: rgba(255, 255, 255, 0.6);
     margin-bottom: 24px;
 }
 
+/* Footer transparan */
 .app-footer {
     text-align: center;
     padding: 24px;
-    color: #94a3b8;
+    color: rgba(255, 255, 255, 0.5);
     font-size: 12px;
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 16px;
+    margin-top: 20px;
+    backdrop-filter: blur(8px);
 }
 
-@media (max-width: 768px) {
-    .card-header {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .header-actions {
-        flex-direction: column;
-        width: 100%;
-    }
-    
-    .btn {
-        justify-content: center;
-    }
-    
-    .action-buttons {
-        flex-direction: column;
-        gap: 4px;
-    }
+/* Flash messages */
+.flash-messages {
+    margin-bottom: 20px;
 }
-/* Fix PDF Table - Strong styling */
+
+.alert {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(8px);
+}
+
+.alert-success {
+    background: rgba(16, 185, 129, 0.9);
+    color: white;
+}
+
+.alert-danger {
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+}
+
+.alert-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alert-icon {
+    font-size: 18px;
+}
+
+.close-alert {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.close-alert:hover {
+    opacity: 1;
+}
+
+/* Preview PDF card (tetap putih untuk cetak) */
 .preview-card .pdf-page {
     max-width: 800px;
     margin: 0 auto;
@@ -370,4 +539,197 @@ body {
     padding: 8px !important;
     border: 1px solid #cbd5e1 !important;
     vertical-align: top !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .card-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn {
+        justify-content: center;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+    }
+}
+/* ============================================ */
+/* BACKGROUND NEON - WARNA TERANG & GLOWING */
+/* ============================================ */
+
+/* Background utama diubah jadi lebih gelap agar neon kontras */
+body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #0a0a0a 100%) !important;
+}
+
+/* Buku berterbangan dengan warna NEON */
+.floating-book {
+    position: absolute;
+    opacity: 0.5;
+    animation: floatBook 20s infinite ease-in-out;
+    font-size: 40px;
+    filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* WARNA NEON UNTUK SETIAP BUKU */
+.floating-book:nth-child(1) { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }  /* NEON PINK */
+.floating-book:nth-child(2) { color: #00ffff; text-shadow: 0 0 10px #00ffff; }  /* NEON CYAN */
+.floating-book:nth-child(3) { color: #39ff14; text-shadow: 0 0 10px #39ff14; }  /* NEON GREEN */
+.floating-book:nth-child(4) { color: #ff6600; text-shadow: 0 0 10px #ff6600; }  /* NEON ORANGE */
+.floating-book:nth-child(5) { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+.floating-book:nth-child(6) { color: #ffff00; text-shadow: 0 0 10px #ffff00; }  /* NEON YELLOW */
+.floating-book:nth-child(7) { color: #00ffff; text-shadow: 0 0 10px #00ffff; }
+.floating-book:nth-child(8) { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+.floating-book:nth-child(9) { color: #39ff14; text-shadow: 0 0 10px #39ff14; }
+.floating-book:nth-child(10) { color: #ff6600; text-shadow: 0 0 10px #ff6600; }
+.floating-book:nth-child(11) { color: #ffff00; text-shadow: 0 0 10px #ffff00; }
+.floating-book:nth-child(12) { color: #00ffff; text-shadow: 0 0 10px #00ffff; }
+.floating-book:nth-child(13) { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+.floating-book:nth-child(14) { color: #39ff14; text-shadow: 0 0 10px #39ff14; }
+.floating-book:nth-child(15) { color: #ff6600; text-shadow: 0 0 10px #ff6600; }
+
+/* Partikel pengetahuan - NEON */
+.knowledge-particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    opacity: 0;
+    animation: particleFloat 8s infinite ease-in-out;
+    box-shadow: 0 0 15px currentColor;
+}
+
+/* WARNA NEON UNTUK PARTIKEL */
+.knowledge-particle:nth-child(1) { background: #ff00ff; box-shadow: 0 0 15px #ff00ff; }
+.knowledge-particle:nth-child(2) { background: #00ffff; box-shadow: 0 0 15px #00ffff; }
+.knowledge-particle:nth-child(3) { background: #39ff14; box-shadow: 0 0 15px #39ff14; }
+.knowledge-particle:nth-child(4) { background: #ff6600; box-shadow: 0 0 15px #ff6600; }
+.knowledge-particle:nth-child(5) { background: #ffff00; box-shadow: 0 0 15px #ffff00; }
+.knowledge-particle:nth-child(6) { background: #ff00ff; box-shadow: 0 0 15px #ff00ff; }
+.knowledge-particle:nth-child(7) { background: #00ffff; box-shadow: 0 0 15px #00ffff; }
+.knowledge-particle:nth-child(8) { background: #39ff14; box-shadow: 0 0 15px #39ff14; }
+.knowledge-particle:nth-child(9) { background: #ff6600; box-shadow: 0 0 15px #ff6600; }
+.knowledge-particle:nth-child(10) { background: #ffff00; box-shadow: 0 0 15px #ffff00; }
+.knowledge-particle:nth-child(11) { background: #ff00ff; box-shadow: 0 0 15px #ff00ff; }
+.knowledge-particle:nth-child(12) { background: #00ffff; box-shadow: 0 0 15px #00ffff; }
+.knowledge-particle:nth-child(13) { background: #39ff14; box-shadow: 0 0 15px #39ff14; }
+.knowledge-particle:nth-child(14) { background: #ff6600; box-shadow: 0 0 15px #ff6600; }
+.knowledge-particle:nth-child(15) { background: #ffff00; box-shadow: 0 0 15px #ffff00; }
+
+/* Animasi buku naik dengan efek neon */
+@keyframes floatBook {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.8;
+    }
+    90% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-20vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Animasi partikel naik dengan efek neon */
+@keyframes particleFloat {
+    0% {
+        transform: translateY(0) scale(0);
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    80% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-300px) scale(2);
+        opacity: 0;
+    }
+}
+
+/* Efek gradasi neon dinamis di background */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 50%, rgba(255, 0, 255, 0.15) 0%, rgba(0, 255, 255, 0.1) 50%, rgba(57, 255, 20, 0.05) 100%);
+    z-index: 0;
+    pointer-events: none;
+    animation: neonGradient 8s infinite alternate;
+}
+
+@keyframes neonGradient {
+    0% {
+        opacity: 0.3;
+        background: radial-gradient(circle at 20% 50%, rgba(255, 0, 255, 0.2) 0%, rgba(0, 255, 255, 0.1) 50%, transparent 80%);
+    }
+    50% {
+        opacity: 0.6;
+        background: radial-gradient(circle at 80% 50%, rgba(0, 255, 255, 0.2) 0%, rgba(255, 0, 255, 0.1) 50%, rgba(57, 255, 20, 0.05) 80%);
+    }
+    100% {
+        opacity: 0.9;
+        background: radial-gradient(circle at 50% 80%, rgba(57, 255, 20, 0.2) 0%, rgba(255, 0, 255, 0.15) 50%, rgba(0, 255, 255, 0.05) 100%);
+    }
+}
+
+/* Menambah efek neon line di tepi card */
+.card {
+    border: 1px solid rgba(0, 255, 255, 0.2) !important;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.1), 0 0 5px rgba(255, 0, 255, 0.1) !important;
+}
+
+/* Efek neon pada tombol */
+.btn-primary {
+    background: linear-gradient(135deg, #ff00ff, #00ffff) !important;
+    color: white !important;
+    font-weight: bold !important;
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.5) !important;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.7) !important;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #39ff14, #00ffff) !important;
+    color: black !important;
+    font-weight: bold !important;
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.5) !important;
+}
+
+/* Efek neon pada header */
+.app-header {
+    border: 1px solid rgba(0, 255, 255, 0.2) !important;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.1) !important;
+}
+
+/* Efek neon pada teks logo */
+.logo h1 span {
+    color: #ff00ff !important;
+    text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff !important;
+}
+
+/* Efek neon pada badge */
+.badge {
+    background: linear-gradient(135deg, #ff00ff, #00ffff) !important;
+    box-shadow: 0 0 8px rgba(255, 0, 255, 0.5) !important;
 }

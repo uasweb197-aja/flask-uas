@@ -3,13 +3,17 @@ import sqlite3
 import uuid
 import base64
 import time
+import secrets
 from io import BytesIO
-from flask import Flask, render_template, request, redirect, url_for, flash, send_file
+from flask import Flask, render_template, request, redirect, url_for, flash, send_file, abort
 import qrcode
 from export_pdf import calculate_books_hash, generate_pdf_buffer
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'flask-book-manager-secret-key-12345')
+
+# Dictionary untuk menyimpan token (untuk production sebaiknya pakai database)
+download_tokens = {}
 
 if os.environ.get('VERCEL'):
     DATABASE = '/tmp/books.db'
@@ -51,6 +55,10 @@ def init_db():
     conn.close()
 
 init_db()
+
+def generate_download_token():
+    """Generate token unik untuk download"""
+    return secrets.token_urlsafe(32)
 
 @app.route('/')
 def index():
@@ -142,23 +150,86 @@ def preview_export():
             return redirect(url_for('index'))
         
         books_list = [dict(b) for b in books]
-        sha256_hash = calculate_books_hash(books_list)
+        doc_hash = calculate_books_hash(books_list)
         
-        qr = qrcode.QRCode(version=1, box_size=10, border=0)
-        qr.add_data(sha256_hash)
+        # Generate token unik
+        token = generate_download_token()
+        
+        # Simpan data dengan token
+        download_tokens[token] = {
+            'books': books_list,
+            'hash': doc_hash,
+            'timestamp': time.time()
+        }
+        
+        # Buat URL verifikasi untuk QR code
+        base_url = request.host_url.rstrip('/')
+        qr_url = f"{base_url}/verify/{token}"
+        
+        # Generate QR code dari URL (bukan hash)
+        qr = qrcode.QRCode(
+            version=5,
+            error_correction=qrcode.constants.ERROR_CORRECT_H,
+            box_size=25,
+            border=8
+        )
+        qr.add_data(qr_url)
         qr.make(fit=True)
-        qr_img = qr.make_image(fill_color="black", back_color="white")
+        qr_image = qr.make_image(fill_color="black", back_color="white")
         
         qr_buffer = BytesIO()
-        qr_img.save(qr_buffer, format="PNG")
+        qr_image.save(qr_buffer, format='PNG')
         qr_base64 = base64.b64encode(qr_buffer.getvalue()).decode('utf-8')
         
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         
-        return render_template('preview.html', books=books_list, sha256_hash=sha256_hash, qr_base64=qr_base64, timestamp=timestamp)
+        return render_template('preview.html', 
+                               books=books_list, 
+                               qr_base64=qr_base64, 
+                               timestamp=timestamp,
+                               qr_url=qr_url)
     except Exception as e:
         flash(f'Gagal memuat preview: {str(e)}', 'danger')
         return redirect(url_for('index'))
+
+@app.route('/verify/<token>')
+def verify_document(token):
+    """Halaman verifikasi saat QR code di-scan (seperti sertifikat digital)"""
+    data = download_tokens.get(token)
+    
+    if not data:
+        return render_template('verify_error.html'), 404
+    
+    books = data['books']
+    doc_hash = data['hash']
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data['timestamp']))
+    
+    # Hitung ulang hash dari data saat ini untuk verifikasi integritas
+    current_hash = calculate_books_hash(books)
+    is_valid = (current_hash == doc_hash)
+    
+    return render_template('verify.html', 
+                          books=books, 
+                          doc_hash=doc_hash, 
+                          is_valid=is_valid,
+                          timestamp=timestamp,
+                          token=token)
+
+@app.route('/download/<token>')
+def download_from_token(token):
+    """Download PDF langsung dari token"""
+    data = download_tokens.get(token)
+    
+    if not data:
+        abort(404)
+    
+    # Generate PDF dari data yang tersimpan
+    pdf_buffer = generate_pdf_buffer(data['books'])
+    
+    return send_file(pdf_buffer, 
+                    mimetype='application/pdf', 
+                    as_attachment=True, 
+                    download_name='sertifikat_data_buku.pdf')
 
 @app.route('/export/download')
 def download_pdf():
@@ -168,7 +239,13 @@ def download_pdf():
         conn.close()
         
         books_list = [dict(b) for b in books]
-        pdf_buffer = generate_pdf_buffer(books_list)
+        
+        # Buat URL verifikasi untuk PDF
+        from flask import request
+        base_url = request.host_url.rstrip('/')
+        token = "example_token"  # Untuk download tanpa verifikasi, gunakan token dummy
+        
+        pdf_buffer = generate_pdf_buffer(books_list, verify_url=f"{base_url}/verify/{token}")
         
         return send_file(pdf_buffer, mimetype='application/pdf', as_attachment=True, download_name='data_buku_signed.pdf')
     except Exception as e:
